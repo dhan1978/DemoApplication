@@ -1,0 +1,13 @@
+mysql:
+  image: mysql
+  ports:
+    - "5432:5432"
+  expose:
+    - "5432"
+  environment:
+    - POSTGRES_USER=dhananjay@dhananjaydb
+    - POSTGRES_PASSWORD=Dhanuki@1234
+    - POSTGRES_DB=demo
+    - POSTGRES_ROOT_PASSWORD=root
+  volumes:
+    - "./conf.d:/etc/postgres/conf.d:ro"
