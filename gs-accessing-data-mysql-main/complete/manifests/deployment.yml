@@ -1,0 +1,21 @@
+apiVersion : apps/v1
+kind: Deployment
+metadata:
+  name: classicwebapp 
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: classicwebapp
+  template:
+    metadata:
+      labels:
+        app: classicwebapp 
+    spec:
+      nodeSelector:
+        kubernetes.io/os: Linux
+      containers:
+        - name: classicwebapp 
+          image: hcbuacr.azurecr.io/classicwebapp
+          ports:
+          - containerPort: 80
