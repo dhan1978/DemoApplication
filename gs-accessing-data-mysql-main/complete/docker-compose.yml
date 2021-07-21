@@ -5,7 +5,7 @@ mysql:
   expose:
     - "5432"
   environment:
-    - POSTGRES_USER=dhananjay@dhananjayatestdb
+    - POSTGRES_USER=dhananjay@dhananjaydbtest
     - POSTGRES_PASSWORD=Dhanuki@1234
     - POSTGRES_DB=demo
     - POSTGRES_ROOT_PASSWORD=root
