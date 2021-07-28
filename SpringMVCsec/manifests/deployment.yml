@@ -1,0 +1,21 @@
+apiVersion : apps/v1
+kind: Deployment
+metadata:
+  name: WEBAppdhananjay 
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: WEBAppdhananjay
+  template:
+    metadata:
+      labels:
+        app: WEBAppdhananjay 
+    spec:
+      nodeSelector:
+        kubernetes.io/os: Linux
+      containers:
+        - name: WEBAppdhananjay 
+          image: hcbuacr.azurecr.io/WEBAppdhananjay
+          ports:
+          - containerPort: 80
