@@ -1,5 +1,5 @@
 name:
-  baseUrl: ${NAME_BASEURL:dhanapp.japanwest.cloudapp.azure.com:8095}
+  baseUrl: ${NAME_BASEURL:dhanubanu.koreasouth.cloudapp.azure.com:8095}
 mysql:
   image: postgresql
   ports:
@@ -7,7 +7,7 @@ mysql:
   expose:
     - "5432"
   environment:
-    - POSTGRES_USER=dhananjay@dhananjaydbtest
+    - POSTGRES_USER=dhananjay@dhananjaytestb
     - POSTGRES_PASSWORD=Dhanuki@1234
     - POSTGRES_DB=demo
     - POSTGRES_ROOT_PASSWORD=root

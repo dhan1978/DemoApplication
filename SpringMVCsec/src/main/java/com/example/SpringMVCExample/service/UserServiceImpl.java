@@ -42,7 +42,7 @@ public class UserServiceImpl  implements UserService {
 	protected Gson gson = new GsonBuilder().create();
 //-----------------------------------------------------------
 	//@Value("${name.baseUrl}")
-	private String baseUrl="dhanapp.japanwest.cloudapp.azure.com:8095";
+	private String baseUrl="dhanubanu.koreasouth.cloudapp.azure.com:8095";
 	
 	private static final  String getUserRequest = "/demo/all";
 	
