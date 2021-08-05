@@ -29,19 +29,19 @@ public class AzurekeyVaultConfig {
 	@Autowired
 	private Environment env;
 	private static final Logger LOGGER = LoggerFactory.getLogger(AzurekeyVaultConfig.class);
-	@Value("${KEY_VAULT_NAME}")
-	private String keyVaultName ;
+	@Value("${azure.keyvault.uri}")
+	private String keyVaultUri ;
 	private com.azure.core.util.Configuration config=new com.azure.core.util.Configuration();
 	private  ConcurrentMap<String, String> configurations=new ConcurrentHashMap<>();
-	@Value("${AZURE_CLIENT_ID}")
-	private String AZURE_CLIENT_ID ;
+	@Value("${azure.keyvault.client-id}")
+	private String AZURE_CLIENT_ID;
 	
-	@Value("${AZURE_TENANT_ID}")
-	private String AZURE_TENANT_ID ;
-	@Value("${AZURE_CLIENT_SECRET}")
-	private String AZURE_CLIENT_SECRET ;
+	@Value("${azure.keyvault.tenant-id}")
+	private String AZURE_TENANT_ID;
+	@Value("${azure.keyvault.client-key}")
+	private String AZURE_CLIENT_SECRET;
 	
-	 String keyVaultUri ="https://" + "keyVaultName" + ".vault.azure.net";
+	 //String keyVaultUri ="https://" + keyVaultName + ".vault.azure.net";
 	
 			 //"https://" + "keyVaultName" + ".vault.azure.net";
 	 
@@ -55,14 +55,16 @@ public class AzurekeyVaultConfig {
 	 return azureResourceManager;
 	 }
 	 */
-	 /*
+	 
 	@Bean(name = "secretClient")
 	public  SecretClient getsecretClient() {
-		 if(keyVaultUri==null||keyVaultUri =="") {
-			 keyVaultUri ="https://dhanankeyvault.vault.azure.net";
-		 }
+		
+		 //if(keyVaultName==null||keyVaultName =="") {
+		//	 this.keyVaultUri ="https://dhanankeyvault.vault.azure.net";
+		 //}
 		 config.put(config.PROPERTY_AZURE_CLIENT_ID, AZURE_CLIENT_ID);
 		 config.put(config.PROPERTY_AZURE_TENANT_ID, AZURE_TENANT_ID);
+		 config.put(config.PROPERTY_AZURE_CLIENT_SECRET, AZURE_CLIENT_SECRET);
 		 //config.put(config..PROPERTY_AZURE_TENANT_ID, AZURE_TENANT_ID);
 		LOGGER.info("keyVaultUri", "-------------------------------"+keyVaultUri);
 	//	AzureServiceTokenProvider azureServiceTokenProvider = new AzureServiceTokenProvider();
@@ -74,12 +76,12 @@ public class AzurekeyVaultConfig {
 	 
 	return secretClient;
 	}
-	*/
+	
 	@Bean(name = "dbDataSource")
 	
 	public DataSource dbDataSource() {
-		//secretClient=getsecretClient();
-		LOGGER.info("++++++++++++++++++++++++++++++++++++ FDATA ++++++++++++++++++++++++++++++++++++");
+		secretClient=getsecretClient();
+		LOGGER.info("++++++++++++++++++++++++++++++++++++ DATA ++++++++++++++++++++++++++++++++++++");
 		LOGGER.info("driver class: [{}]", env.getProperty("spring-datasource-driver-class-name"));
 		
 		LOGGER.info("url class: [{}]", env.getProperty("spring-datasource-url"));
@@ -87,14 +89,27 @@ public class AzurekeyVaultConfig {
 		LOGGER.info("username: [{}]", env.getProperty("spring-datasource-username"));
 		
 		LOGGER.info("password: [{}]", env.getProperty("spring-datasource-password"));
+		LOGGER.info("url class: [{}]", secretClient.getVaultUrl());
+	LOGGER.info("driver class: [{}]", secretClient.getSecret("spring-datasource-driver-class-name").getValue());
+		
+		LOGGER.info("url class: [{}]", secretClient.getSecret("spring-datasource-url").getValue());
+		
+		LOGGER.info("username: [{}]", secretClient.getSecret("spring-datasource-username").getValue());
+		
+		LOGGER.info("password: [{}]", secretClient.getSecret("spring-datasource-password").getValue());
 		
 		LOGGER.info("------------------------------------ DATA ------------------------------------");
-		secretClient.getSecret("dhanankeyvault");
+		//secretClient.getSecret("dhanankeyvault");
 	DriverManagerDataSource dataSource = new DriverManagerDataSource();
-	dataSource.setDriverClassName(env.getProperty("spring-datasource-driver-class-name"));
-	dataSource.setUrl(env.getProperty("spring-datasource-url"));
-	dataSource.setUsername(env.getProperty("spring-datasource-username"));
-	dataSource.setPassword(env.getProperty("spring-datasource-password"));
+	//dataSource.setDriverClassName(env.getProperty("spring-datasource-driver-class-name"));
+	//dataSource.setUrl(env.getProperty("spring-datasource-url"));
+	//dataSource.setUsername(env.getProperty("spring-datasource-username"));
+	//dataSource.setPassword(env.getProperty("spring-datasource-password"));
+	dataSource.setDriverClassName(secretClient.getSecret("spring-datasource-driver-class-name").getValue());
+	dataSource.setUrl(secretClient.getSecret("spring-datasource-url").getValue());
+	dataSource.setUsername(secretClient.getSecret("spring-datasource-username").getValue());
+	dataSource.setPassword(secretClient.getSecret("spring-datasource-password").getValue());
+
 	return dataSource;
 }
 	

@@ -1,0 +1,25 @@
+spring:
+  datasource:
+    url: ${ DATASOURCE_URL:jdbc:postgresql://${POSTRES_HOST:dhananjaytestb.postgres.database.azure.com}:5432/demo}
+    
+server:
+  port: 8090
+  
+azure:
+  keyvault:
+    client-id: 9730707d-e643-4d75-bc06-c6ff8f23f059
+    client-key: dhanankeyvault 
+    uri: https://dhanankeyvault.vault.azure.net/
+    tenant-id: 189de737-c93a-4f5a-8b68-6f4ca9941912
+    object-id: fd664ae4-10d1-404e-bd35-610026310e86
+    enabled: true
+    token-acquire-timeout-seconds: 60
+    refresh-interval: 1800000 
+    case-sensitive-keys: true
+
+
+management:
+         endpoints:
+                web:
+                  exposure:
+                        include: "health, env, info, loggers"          
