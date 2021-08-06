@@ -1,8 +1,11 @@
 package com.example.accessingdatapostgressql;
+import java.util.HashMap;
+import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import javax.sql.DataSource;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,10 +20,15 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.web.context.WebApplicationContext;
 
+import com.azure.core.util.polling.SyncPoller;
 import com.azure.identity.DefaultAzureCredentialBuilder;
+
 import com.azure.security.keyvault.secrets.SecretClient;
 import com.azure.security.keyvault.secrets.SecretClientBuilder;
+import com.azure.security.keyvault.secrets.models.DeletedSecret;
+import com.azure.security.keyvault.secrets.models.KeyVaultSecret;
 @Configuration
 @EnableJpaRepositories(basePackages = {
 		"com.example.accessingdatapostgressql" }, entityManagerFactoryRef = "dbEntityManager", transactionManagerRef = "dbTransactionManager")
@@ -31,7 +39,8 @@ public class AzurekeyVaultConfig {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AzurekeyVaultConfig.class);
 	@Value("${azure.keyvault.uri}")
 	private String keyVaultUri ;
-	private com.azure.core.util.Configuration config=new com.azure.core.util.Configuration();
+	private com.azure.core.util.Configuration config1=new com.azure.core.util.Configuration();
+	Properties config=new Properties();
 	private  ConcurrentMap<String, String> configurations=new ConcurrentHashMap<>();
 	@Value("${azure.keyvault.client-id}")
 	private String AZURE_CLIENT_ID;
@@ -40,6 +49,7 @@ public class AzurekeyVaultConfig {
 	private String AZURE_TENANT_ID;
 	@Value("${azure.keyvault.client-key}")
 	private String AZURE_CLIENT_SECRET;
+	
 	
 	 //String keyVaultUri ="https://" + keyVaultName + ".vault.azure.net";
 	
@@ -62,9 +72,11 @@ public class AzurekeyVaultConfig {
 		 //if(keyVaultName==null||keyVaultName =="") {
 		//	 this.keyVaultUri ="https://dhanankeyvault.vault.azure.net";
 		 //}
-		 config.put(config.PROPERTY_AZURE_CLIENT_ID, AZURE_CLIENT_ID);
-		 config.put(config.PROPERTY_AZURE_TENANT_ID, AZURE_TENANT_ID);
-		 config.put(config.PROPERTY_AZURE_CLIENT_SECRET, AZURE_CLIENT_SECRET);
+		 config.put(config1.PROPERTY_AZURE_CLIENT_ID, AZURE_CLIENT_ID);
+		 config.put(config1.PROPERTY_AZURE_TENANT_ID, AZURE_TENANT_ID);
+		 config.put(config1.PROPERTY_AZURE_CLIENT_SECRET, AZURE_CLIENT_SECRET);
+		 
+         //System.setProperties(config);
 		 //config.put(config..PROPERTY_AZURE_TENANT_ID, AZURE_TENANT_ID);
 		LOGGER.info("keyVaultUri", "-------------------------------"+keyVaultUri);
 	//	AzureServiceTokenProvider azureServiceTokenProvider = new AzureServiceTokenProvider();
@@ -73,30 +85,35 @@ public class AzurekeyVaultConfig {
 		    .vaultUrl(keyVaultUri)
 		    .credential(new DefaultAzureCredentialBuilder().build())
 		    .buildClient(); 
-	 
+ 
 	return secretClient;
 	}
 	
-	@Bean(name = "dbDataSource")
+	
 	
 	public DataSource dbDataSource() {
 		secretClient=getsecretClient();
+		String className=secretClient.getSecret("spring-datasource-driver-class-name").getValue();
+		String dbUrl=secretClient.getSecret("spring-datasourcee-url").getValue();
+		String userName=secretClient.getSecret("spring-datasource-username").getValue();
+		String password=secretClient.getSecret("spring-datasource-password").getValue();
 		LOGGER.info("++++++++++++++++++++++++++++++++++++ DATA ++++++++++++++++++++++++++++++++++++");
 		LOGGER.info("driver class: [{}]", env.getProperty("spring-datasource-driver-class-name"));
 		
-		LOGGER.info("url class: [{}]", env.getProperty("spring-datasource-url"));
+		LOGGER.info("url class: [{}]", System.getenv("spring-datasource-url"));
+		LOGGER.info("url class: [{}]", System.getenv("spring-datasource-url"));
 		
 		LOGGER.info("username: [{}]", env.getProperty("spring-datasource-username"));
 		
 		LOGGER.info("password: [{}]", env.getProperty("spring-datasource-password"));
-		LOGGER.info("url class: [{}]", secretClient.getVaultUrl());
-	LOGGER.info("driver class: [{}]", secretClient.getSecret("spring-datasource-driver-class-name").getValue());
+		LOGGER.info("url of key vault class: [{}]", secretClient.getVaultUrl());
+	LOGGER.info("driver sect class class: [{}]", className);
 		
-		LOGGER.info("url class: [{}]", secretClient.getSecret("spring-datasource-url").getValue());
+		LOGGER.info("url sec class url: [{}]", dbUrl);
 		
-		LOGGER.info("username: [{}]", secretClient.getSecret("spring-datasource-username").getValue());
+		LOGGER.info("sec username: [{}]", userName);
 		
-		LOGGER.info("password: [{}]", secretClient.getSecret("spring-datasource-password").getValue());
+		LOGGER.info("sec password: [{}]", password);
 		
 		LOGGER.info("------------------------------------ DATA ------------------------------------");
 		//secretClient.getSecret("dhanankeyvault");
@@ -105,10 +122,11 @@ public class AzurekeyVaultConfig {
 	//dataSource.setUrl(env.getProperty("spring-datasource-url"));
 	//dataSource.setUsername(env.getProperty("spring-datasource-username"));
 	//dataSource.setPassword(env.getProperty("spring-datasource-password"));
-	dataSource.setDriverClassName(secretClient.getSecret("spring-datasource-driver-class-name").getValue());
-	dataSource.setUrl(secretClient.getSecret("spring-datasource-url").getValue());
-	dataSource.setUsername(secretClient.getSecret("spring-datasource-username").getValue());
-	dataSource.setPassword(secretClient.getSecret("spring-datasource-password").getValue());
+	dataSource.setDriverClassName(className);
+	dataSource.setUrl(dbUrl);
+	dataSource.setUsername(userName);
+	dataSource.setPassword(password);
+	
 
 	return dataSource;
 }
@@ -124,16 +142,15 @@ public class AzurekeyVaultConfig {
 	public LocalContainerEntityManagerFactoryBean dbEntityManager() {
 		LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
 		em.setDataSource(dbDataSource());
-		em.setPackagesToScan(new String[] { "com.example.accessingdatapostgressql.Users" });
+		em.setPackagesToScan(new String[] { "com.example.accessingdatapostgressql" });
 		em.setPersistenceUnitName("dbEntityManager");
 		HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
 		em.setJpaVendorAdapter(vendorAdapter);
-		// HashMap<String, Object> properties = new HashMap<>();
-		// properties.put("hibernate.dialect",
-		// env.getProperty("hibernate.dialect"));
-		// properties.put("hibernate.show-sql",
-		// env.getProperty("jdbc.show-sql"));
-		// em.setJpaPropertyMap(properties);
+		 HashMap<String, Object> properties = new HashMap<>();
+		 properties.put("hibernate.dialect",
+		 env.getProperty("spring.jpa.properties.hibernate.dialect"));
+		 
+		 em.setJpaPropertyMap(properties);
 		return em;
 	}
 		   
