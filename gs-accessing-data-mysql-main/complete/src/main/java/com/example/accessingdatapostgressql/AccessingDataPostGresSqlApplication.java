@@ -8,7 +8,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -19,9 +22,9 @@ import org.springframework.core.annotation.Order;
 
 
 @ComponentScan
-@Configuration
+@EnableAutoConfiguration
 @SpringBootApplication
-public class AccessingDataPostGresSqlApplication //implements CommandLineRunner
+public class AccessingDataPostGresSqlApplication extends SpringBootServletInitializer//implements CommandLineRunner
 {
 	
 	
@@ -29,6 +32,13 @@ public class AccessingDataPostGresSqlApplication //implements CommandLineRunner
 		SpringApplication.run(AccessingDataPostGresSqlApplication.class, args);
 		
 	}
+	@Override  
+	protected SpringApplicationBuilder configure(SpringApplicationBuilder application)   
+	{  
+	return application.sources(AccessingDataPostGresSqlApplication.class);  
+	}   
+	
+	
 /*
 	 @Override
 	    public void run(String... args) {

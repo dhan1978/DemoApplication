@@ -1,0 +1,19 @@
+name:
+  baseUrl: ${NAME_BASEURL:dhanubanu.koreasouth.cloudapp.azure.com:8095}
+mysql:
+  image: postgresql
+  ports:
+    - "5432:5432"
+  expose:
+    - "5432"
+  environment:
+    - POSTGRES_URL=jdbc:postgresql://${POSTRES_HOST:dhananjaytestb.postgres.database.azure.com}:5432/demo
+    - POSTGRES_USER=dhananjay@dhananjaytestb
+    - POSTGRES_PASSWORD=Dhanuki@1234
+    - POSTGRES_DB=demo
+    - POSTGRES_ROOT_PASSWORD=root
+  volumes:
+    - "./conf.d:/etc/postgres/conf.d:ro"
+server:
+  port: 8090
+  connection-timeout: 600000
