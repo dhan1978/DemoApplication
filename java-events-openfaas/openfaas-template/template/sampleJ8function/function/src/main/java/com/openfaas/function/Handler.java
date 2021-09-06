@@ -1,20 +1,15 @@
 package com.openfaas.function;
 
 
-import com.mysql.jdbc.profiler.LoggingProfilerEventHandler;
-import com.mysql.jdbc.profiler.ProfilerEvent;
-import com.openfaas.model.IHandler;
+
 
 import java.io.IOException;
 import java.io.Serializable;
 import java.lang.management.ManagementFactory;
-import java.sql.Connection;
-import java.sql.SQLException;
+
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
-import javax.sql.DataSource;
 
 import org.postgresql.core.*;
 import org.slf4j.Logger;
@@ -30,7 +25,7 @@ import com.github.shyiko.mysql.binlog.event.EventData;
 import com.github.shyiko.mysql.binlog.event.TableMapEventData;
 import com.github.shyiko.mysql.binlog.event.UpdateRowsEventData;
 import com.github.shyiko.mysql.binlog.event.WriteRowsEventData;
-import com.mysql.jdbc.log.Log;
+
 public class Handler extends com.openfaas.model.AbstractHandler {
 	  private static final Logger logger = LoggerFactory.getLogger(Handler.class);
 	  private static String PRODUCT_TABLE_NAME = "products";
