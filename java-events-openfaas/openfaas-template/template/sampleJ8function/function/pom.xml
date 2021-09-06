@@ -1,0 +1,253 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	 <groupId>com.bolingcavalry</groupId>
+    <artifactId>sampleJ8function</artifactId>
+    <version>1.0-SNAPSHOT</version>
+	<properties>
+
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+		<java.version>1.8</java.version>
+
+	</properties>
+	<dependencies>
+
+		<dependency>
+
+			<groupId>org.apache.commons</groupId>
+
+			<artifactId>commons-math3</artifactId>
+
+			<version>3.6.1</version>
+
+		</dependency>
+		 <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.1.41</version>
+        </dependency>
+         <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-api</artifactId>
+      <version>2.13.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-core</artifactId>
+      <version>2.13.2</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-slf4j18-impl</artifactId>
+      <version>2.13.0</version>
+    </dependency>
+
+        <!-- https://mvnrepository.com/artifact/io.fabric8/openshift-client -->
+<dependency>
+    <groupId>io.fabric8</groupId>
+    <artifactId>openshift-client</artifactId>
+    <version>5.7.0</version>
+</dependency>
+        
+		<dependency>
+
+			<groupId>com.google.guava</groupId>
+
+			<artifactId>guava</artifactId>
+
+			<version>23.0</version>
+
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
+<dependency>
+    <groupId>com.google.code.gson</groupId>
+    <artifactId>gson</artifactId>
+    <version>2.8.7</version>
+</dependency>
+		 <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>9.4.1212</version>
+        </dependency>
+		<dependency>
+
+			<groupId>junit</groupId>
+
+			<artifactId>junit</artifactId>
+
+			<version>4.12</version>
+
+		</dependency>
+		<dependency>
+
+			<groupId>com.openfaas</groupId>
+
+			<artifactId>model</artifactId>
+
+			<version>0.1.1</version>
+
+		</dependency>
+		<dependency>
+
+			<groupId>com.openfaas</groupId>
+
+			<artifactId>entrypoint</artifactId>
+
+			<version>0.1.0</version>
+
+		</dependency>
+		<dependency>
+
+			<groupId>com.fasterxml.jackson.core</groupId>
+
+			<artifactId>jackson-databind</artifactId>
+
+			<version>2.11.0</version>
+
+		</dependency>
+		<dependency>
+
+			<groupId>org.apache.commons</groupId>
+
+			<artifactId>commons-lang3</artifactId>
+
+			<version>3.10</version>
+
+		</dependency>
+ <dependency>
+                <groupId>com.github.shyiko</groupId>
+                <artifactId>mysql-binlog-connector-java</artifactId>
+                <version>0.16.1</version>
+            </dependency>
+    
+            <dependency>
+                <groupId>com.pusher</groupId>
+                <artifactId>pusher-http-java</artifactId>
+                <version>1.0.0</version>
+            </dependency>
+	</dependencies>
+	<build>
+
+		<plugins>
+
+			<plugin>
+
+				<groupId>org.apache.maven.plugins</groupId>
+
+				<artifactId>maven-compiler-plugin</artifactId>
+
+				<version>3.1</version>
+
+				<configuration>
+
+					<source>1.8</source>
+
+					<target>1.8</target>
+
+					<encoding>UTF-8</encoding>
+
+				</configuration>
+
+			</plugin>
+
+			<plugin>
+
+				<groupId>org.apache.maven.plugins</groupId>
+
+				<artifactId>maven-dependency-plugin</artifactId>
+
+				<version>2.10</version>
+
+				<executions>
+
+					<execution>
+
+						<id>copy-dependencies</id>
+
+						<phase>package</phase>
+
+						<goals>
+
+							<goal>copy-dependencies</goal>
+
+						</goals>
+
+						<configuration>
+
+							<outputDirectory>${project.build.directory}/lib</outputDirectory>
+
+							<overWriteReleases>false</overWriteReleases>
+
+							<overWriteSnapshots>false</overWriteSnapshots>
+
+							<overWriteIfNewer>true</overWriteIfNewer>
+
+						</configuration>
+
+					</execution>
+
+				</executions>
+
+			</plugin>
+
+			<plugin>
+
+				<artifactId>maven-assembly-plugin</artifactId>
+
+				<version>3.0.0</version>
+
+				<configuration>
+
+					<archive>
+
+						<manifest>
+
+							<mainClass>com.openfaas.entrypoint.App</mainClass>
+
+						</manifest>
+
+						<manifestEntries>
+
+							<Class-Path>.</Class-Path>
+
+						</manifestEntries>
+
+					</archive>
+
+					<descriptorRefs>
+
+						<descriptorRef>jar-with-dependencies</descriptorRef>
+
+					</descriptorRefs>
+
+				</configuration>
+
+				<executions>
+
+					<execution>
+
+						<id>make-assembly</id>
+
+						<phase>package</phase>
+
+						<goals>
+
+							<goal>single</goal>
+
+						</goals>
+
+					</execution>
+
+				</executions>
+
+			</plugin>
+
+		</plugins>
+
+	</build>
+
+</project>
