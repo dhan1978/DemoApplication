@@ -19,7 +19,6 @@ import javax.sql.DataSource;
 import org.postgresql.core.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 import com.openfaas.model.IResponse;
 import com.openfaas.model.IRequest;
