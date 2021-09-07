@@ -12,7 +12,12 @@ version = '1.0'
 sourceCompatibility = 1.8
 
 repositories {
-	mavenCentral()
+jcenter()
+mavenCentral()
+ flatDir {
+        dirs '../libs'
+    }
+
 }
 
 
@@ -41,3 +46,29 @@ dependencies {
      compile('org.postgresql:postgresql:9.4.1212')
       compile('mysql:mysql-connector-java:5.1.41')
 }
+jar {
+    manifest {
+        attributes 'Implementation-Title': 'OpenFaaS Function',
+                   'Implementation-Version': '1.0'
+    }
+}
+
+
+distributions {
+    main {
+        contents {
+            from jar
+            into('lib') {
+                from(project.configurations.runtime)
+            }
+        }
+    }
+}
+uploadArchives {
+    repositories {
+       flatDir {
+           dirs 'repos'
+       }
+    }
+}
+
