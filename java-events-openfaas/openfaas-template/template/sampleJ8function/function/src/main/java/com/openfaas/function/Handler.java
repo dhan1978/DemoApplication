@@ -19,13 +19,17 @@ import com.openfaas.model.IResponse;
 import com.openfaas.model.IRequest;
 import com.openfaas.model.Response;
 import com.pusher.rest.Pusher;
+
 import com.github.shyiko.mysql.binlog.BinaryLogClient;
 import com.github.shyiko.mysql.binlog.event.DeleteRowsEventData;
 import com.github.shyiko.mysql.binlog.event.EventData;
 import com.github.shyiko.mysql.binlog.event.TableMapEventData;
 import com.github.shyiko.mysql.binlog.event.UpdateRowsEventData;
 import com.github.shyiko.mysql.binlog.event.WriteRowsEventData;
-
+import com.github.shyiko.mysql.binlog.event.deserialization.EventDeserializer;
+import com.github.shyiko.mysql.binlog.event.deserialization.EventDeserializer.CompatibilityMode;
+import com.github.shyiko.mysql.binlog.network.SSLMode;
+//import com.pusher.pushnotifications.PushNotifications;
 public class Handler extends com.openfaas.model.AbstractHandler {
 	  private static final Logger logger = LoggerFactory.getLogger(Handler.class);
 	  private static String PRODUCT_TABLE_NAME = "products";
@@ -33,15 +37,31 @@ public class Handler extends com.openfaas.model.AbstractHandler {
     //	LoggingProfilerEventHandler lpeh=new LoggingProfilerEventHandler();
     	 final Map<String, Long> tableMap = new HashMap<String, Long>();
     	//lpeh.init(conn, props);
-    	BinaryLogClient client =
-                new BinaryLogClient("dhananjaytestmysql.mysql.database.azure.com", 3306, "dhananjay@dhananjaytestmysql", "Dhanuki@1234");
+    	// PushNotifications beamsClient = new PushNotifications(instanceId, "926a61b08c9a34fc6685");
+  //BinaryLogClient client = new BinaryLogClient("dhananjaytestmysql.mysql.database.azure.com", 3306, "mysql","dhananjay@dhananjaytestmysql", "Dhanuki@1234");
+    	 
+        
+    	
     	Pusher pusher = 
-                new Pusher("1261183", "550f92570f22ffe3b2bf", "d457dac4f7f7bd815cb9");
+                new Pusher("1264375", "926a61b08c9a34fc6685", "84d6a3ad5df3c6339589");
     		pusher.setCluster("us2");
             pusher.setEncrypted(true);
+            System.setProperty("javax.net.ssl.keyStore", "/path/to/keystore.jks");
+            System.setProperty("javax.net.ssl.keyStorePassword", "changeit");
+            BinaryLogClient client = new BinaryLogClient("172.30.47.135", 3306, "LambdaTest","Dhananjay", "Dhanuki@1234");
+          //  client.setSSLMode(SSLMode.REQUIRED);
+            client.setSSLMode(SSLMode.VERIFY_IDENTITY);
+            //   client.setSSLMode(SSLMode.VERIFY_IDENTITY); 
+//            Eventserializer ventserializer= new Eventserializer()
+            
+           // client.registerEventListener(new TraceEventListener());
+            //client.registerEventListener(eventListener = new CountDownEventListener());
+            //client.registerLifecycleListener(new TraceLifecycleListener());
+            //client.connect(DEFAULT_TIMEOUT);
+           
             client.registerEventListener(event -> {
                 EventData data = event.getData();
-
+                System.out.println(event);
                 if(data instanceof TableMapEventData) {
                     TableMapEventData tableData = (TableMapEventData)data;
                     tableMap.put(tableData.getTable(), tableData.getTableId());
@@ -50,6 +70,7 @@ public class Handler extends com.openfaas.model.AbstractHandler {
                     if(eventData.getTableId() == tableMap.get(PRODUCT_TABLE_NAME)) {
                         for(Object[] product: eventData.getRows()) {
                             pusher.trigger(PRODUCT_TABLE_NAME, "insert", getProductMap(product));
+                            
                         }
                     }
                 } else if(data instanceof UpdateRowsEventData) {
@@ -74,7 +95,10 @@ public class Handler extends com.openfaas.model.AbstractHandler {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-    
+		
+
+	        // connect to Pusher
+	        
     	/*try {
     		 
 			Connection conn=dbDataSource().getConnection();
