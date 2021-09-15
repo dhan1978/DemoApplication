@@ -2,6 +2,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+
 	 <groupId>com.bolingcavalry</groupId>
     <artifactId>sampleJ8function</artifactId>
     <version>1.0-SNAPSHOT</version>
@@ -14,8 +15,9 @@
 		<java.version>1.8</java.version>
 
 	</properties>
+	
 	<dependencies>
-
+ 
 		<dependency>
 
 			<groupId>org.apache.commons</groupId>
@@ -133,7 +135,7 @@
 	<build>
 
 		<plugins>
-
+ 
 			<plugin>
 
 				<groupId>org.apache.maven.plugins</groupId>
@@ -150,6 +152,8 @@
 
 					<encoding>UTF-8</encoding>
 
+          
+       
 				</configuration>
 
 			</plugin>
@@ -193,9 +197,31 @@
 				</executions>
 
 			</plugin>
-
+<!-- 
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jarsigner-plugin</artifactId>
+                <version>1.2</version>
+                <executions>
+                    <execution>
+                        <id>sign</id>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                	<alias>server-alias</alias>
+                    <keystore>${project.basedir}\path\to\keystore.jks</keystore>
+                    
+                    <storepass>changeit</storepass>
+                    <keypass>changeit</keypass>
+          
+                </configuration>
+            </plugin>
+            -->
 			<plugin>
-
+ 
 				<artifactId>maven-assembly-plugin</artifactId>
 
 				<version>3.0.0</version>
@@ -207,7 +233,7 @@
 						<manifest>
 
 							<mainClass>com.openfaas.entrypoint.App</mainClass>
-
+							
 						</manifest>
 
 						<manifestEntries>
@@ -217,7 +243,33 @@
 						</manifestEntries>
 
 					</archive>
-
+					<!--
+<plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.6</version>
+                <executions>
+                    <execution>
+                        <id>copy-resources</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${basedir}/target</outputDirectory>
+                            <includeEmptyDirs>true</includeEmptyDirs>
+                            <resources>
+                               
+                                <resource>
+                                    <targetPath>${basedir}/function/path</targetPath>
+                                    <directory>resources</directory>
+                                    <filtering>false</filtering>
+                                </resource>
+                               
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>-->
 					<descriptorRefs>
 
 						<descriptorRef>jar-with-dependencies</descriptorRef>
