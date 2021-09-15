@@ -2,55 +2,89 @@ package com.openfaas.function;
 
 
 
-
+import java.sql.*;
 import java.io.IOException;
+import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
 import java.io.Serializable;
 import java.lang.management.ManagementFactory;
 
 import java.util.HashMap;
 import java.util.Map;
-
+import java.util.concurrent.TimeoutException;
+import java.util.function.Supplier;
 
 import org.postgresql.core.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.mysql.jdbc.*;
+import java.sql.Connection;
 
 import com.openfaas.model.IResponse;
 import com.openfaas.model.IRequest;
 import com.openfaas.model.Response;
 import com.pusher.rest.Pusher;
-
+import com.sun.javafx.event.EventQueue;
+import com.mysql.jdbc.jdbc2.optional.*;
 import com.github.shyiko.mysql.binlog.BinaryLogClient;
 import com.github.shyiko.mysql.binlog.event.DeleteRowsEventData;
 import com.github.shyiko.mysql.binlog.event.EventData;
+import com.github.shyiko.mysql.binlog.event.EventType;
 import com.github.shyiko.mysql.binlog.event.TableMapEventData;
 import com.github.shyiko.mysql.binlog.event.UpdateRowsEventData;
 import com.github.shyiko.mysql.binlog.event.WriteRowsEventData;
+import com.github.shyiko.mysql.binlog.event.deserialization.EventDataDeserializer;
 import com.github.shyiko.mysql.binlog.event.deserialization.EventDeserializer;
 import com.github.shyiko.mysql.binlog.event.deserialization.EventDeserializer.CompatibilityMode;
 import com.github.shyiko.mysql.binlog.network.SSLMode;
 //import com.pusher.pushnotifications.PushNotifications;
 public class Handler extends com.openfaas.model.AbstractHandler {
 	  private static final Logger logger = LoggerFactory.getLogger(Handler.class);
+	  private EventQueue counters;
+	  Supplier<BinaryLogClient> preConnect;
 	  private static String PRODUCT_TABLE_NAME = "products";
     public IResponse Handle(IRequest req) {
     //	LoggingProfilerEventHandler lpeh=new LoggingProfilerEventHandler();
     	 final Map<String, Long> tableMap = new HashMap<String, Long>();
+    	 Map<String, Object> configuration=new HashMap<String, Object>();
     	//lpeh.init(conn, props);
     	// PushNotifications beamsClient = new PushNotifications(instanceId, "926a61b08c9a34fc6685");
   //BinaryLogClient client = new BinaryLogClient("dhananjaytestmysql.mysql.database.azure.com", 3306, "mysql","dhananjay@dhananjaytestmysql", "Dhanuki@1234");
-    	 
-        
+    	 configuration.put("mysql.hostname", "172.30.47.135");
+    	 configuration.put("mysql.schema","LambdaTest");
+    	 configuration.put("mysql.username","Dhananjay");
+    	 configuration.put("mysql.password","Dhanuki@1234");
     	
     	Pusher pusher = 
                 new Pusher("1264375", "926a61b08c9a34fc6685", "84d6a3ad5df3c6339589");
+    	
     		pusher.setCluster("us2");
             pusher.setEncrypted(true);
-            System.setProperty("javax.net.ssl.keyStore", "/path/to/keystore.jks");
-            System.setProperty("javax.net.ssl.keyStorePassword", "changeit");
+            Connection conn = null;
+          //  System.setProperty("javax.net.ssl.keyStore", "/path/to/keystore.jks");
+            //System.setProperty("javax.net.ssl.keyStorePassword", "changeit");
+          String  transitUri = "mysql://" + "172.30.47.135" + ":" + 3306;
+          try {
+			conn =
+				       DriverManager.getConnection("jdbc:mysql://172.30.47.135/LambdaTest?" +
+				                                   "user=Dhananjay&password=Dhanuki@1234");
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}  
+         
             BinaryLogClient client = new BinaryLogClient("172.30.47.135", 3306, "LambdaTest","Dhananjay", "Dhanuki@1234");
+           // client = new BinaryLogClient(config.getHostname(), config.getPort(), "replicator", "replpass");
+            client.setServerId(client.getServerId() - 1); // avoid clashes between BinaryLogClient instances
+            client.setKeepAlive(false);
+           client.setSSLMode(SSLMode.DISABLED);
+           EventDeserializer eventDeserializer = new EventDeserializer();
+           eventDeserializer.setEventDataDeserializer(EventType.STOP, (EventDataDeserializer) new TableMapEventData());
+           client.setEventDeserializer(eventDeserializer);
+           if (preConnect != null) {
+           if (preConnect != null) preConnect.get();
+           }
           //  client.setSSLMode(SSLMode.REQUIRED);
-            client.setSSLMode(SSLMode.VERIFY_IDENTITY);
+           // client.setSSLMode(SSLMode.VERIFY_IDENTITY);
             //   client.setSSLMode(SSLMode.VERIFY_IDENTITY); 
 //            Eventserializer ventserializer= new Eventserializer()
             
@@ -90,8 +124,12 @@ public class Handler extends com.openfaas.model.AbstractHandler {
                 }
             });
 		  try {
-			client.connect();
-		} catch (IOException e) {
+			 // client.registerLifecycleListener(new TraceLifecycleListener());
+		
+			  //eventDeserializer.setEventDataDeserializer(EventType
+			  
+			  client.connect(Long.MAX_VALUE); // does not block
+		} catch (IOException | TimeoutException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
