@@ -1,0 +1,16 @@
+{
+  "name": "role-based-access-management",
+  "version": "1.0.0",
+  "description": "",
+  "main": "authorizer.js",
+  "scripts": {
+    "start": "node ./bin/www"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "jsonwebtoken": "^8.5.0",
+    "aws-param-store": "^2.1.0",
+    "hashmap": "^2.3.0"
+  }
+}

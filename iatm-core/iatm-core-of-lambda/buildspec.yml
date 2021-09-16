@@ -1,0 +1,21 @@
+--- 
+artifacts: 
+  files: 
+    - "**/*"
+  name: CodeBuildProjectForLambda.zip
+  type: zip
+phases: 
+  build: 
+    commands: 
+      - "echo Build started on `date`"
+  install: 
+    runtime-versions: 
+      nodejs: 10
+  post_build: 
+    commands: 
+      - "echo Build completed on `date`"
+  pre_build: 
+    commands: 
+      - "echo Installing source NPM dependencies..."
+      - "npm install"
+version: 0.2

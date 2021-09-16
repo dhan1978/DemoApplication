@@ -1,0 +1,7 @@
+version: 0.2
+
+phases:
+  build:
+    commands:
+       - pip install --upgrade awscli
+       - aws lambda update-function-code --function-name iatm-core-LambdaAuthorizer-dev --s3-bucket iatm-core-dev-lambda --s3-key CodeBuildProjectForLambda.zip --publish   
