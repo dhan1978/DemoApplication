@@ -11,6 +11,7 @@
   "author": "",
   "license": "ISC"
   "dependencies": {
+	"aws-sdk": "2.4.12",
     "jsonwebtoken": "^8.5.0",
     "aws-param-store": "^2.1.0",
     "hashmap": "^2.3.0"
