@@ -13,7 +13,7 @@ var resourcePath = '/';
 
 //const secretKey = resource_by_path.get('/'+ customer.toLowerCase() + '/' + env.toLowerCase() + '/' + 'Iatm_Token_Secret');
 
-cons secretKey = customer.toLowerCase()+ '/' + env.toLowerCase() + '/'+'Iatm_Token_Secret';
+const secretKey = customer.toLowerCase()+ '/' + env.toLowerCase() + '/'+'Iatm_Token_Secret';
 
 
 module.exports = {
