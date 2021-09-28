@@ -3,16 +3,20 @@ var jwt = require('jsonwebtoken');
 var zlib = require("zlib");
 var iamPolicy = require("./iam-policy");
 const constant = require('./constants');
+const wordwrap = require('wordwrap');
 
-module.exports.handler  = async (event,context, callback) => {
+module.exports  = async (event,context) => {
 mainfunction(event,context, callback);
-
-    return {status: "done"}
+//exports.handler
+  //  return {status: "done"}
+  return "ok"
 }
- exports.handler =  function mainfunction(event, context, callback) {
+ function mainfunction(event, context, callback) {
 	console.log("Lambda authorizer invoked");
-	var tokenCompressed = event.headers.Authorization;
-
+	var tokenCompressed = wordwrap.soft(17)(event.query['Authorization'])
+		if (tokenCompressed == undefined){
+	 tokenCompressed = event.headers.Authorization;
+	}
     if(tokenCompressed == undefined) {
         tokenCompressed = event.headers.authorization;
     }
@@ -30,6 +34,7 @@ mainfunction(event,context, callback);
     var methodArn = event.methodArn;
     console.log("method Arn is........" + methodArn);
     var cipher = constant.secretKey;
+	console.log("constant.secretKey is........" + cipher);
     if(cipher == null){
        setTimeout(function() {}, 1000);
        cipher = constant.secretKey;       
