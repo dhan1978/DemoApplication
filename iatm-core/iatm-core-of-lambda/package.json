@@ -14,7 +14,7 @@
 	"aws-sdk": "2.990.0",
     "jsonwebtoken": "^8.5.0",
     "aws-param-store": "^2.1.0",
-	"word-wrap":"^1.2.3",
+	"word-wrap": "^1.2.3",
     "hashmap": "^2.3.0"
   }
 }
